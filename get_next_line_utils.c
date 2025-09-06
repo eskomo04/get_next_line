@@ -6,23 +6,11 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:36:14 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/03 03:07:22 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/06 17:33:18 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-size_t	ft_strlen(const char *s)
-{
-	size_t	length;
-
-	length = 0;
-	while (s[length] != '\0')
-	{
-		length++;
-	}
-	return (length);
-}
 
 int	ft_lstsize(t_list *leftover)
 {
@@ -35,7 +23,7 @@ int	ft_lstsize(t_list *leftover)
 	while (leftover)
 	{
 		i = 0;
-		while (leftover->content[i] != '\n')
+		while (((char *)leftover->content)[i] != '\n')
 		{
 			i++;
 			len++;
@@ -82,29 +70,31 @@ void	ft_clean_leftover(t_list **leftover)
 
 	last_node = ft_lstlast(*leftover);
 	new_node = malloc(sizeof(t_list));
+	if (!new_node)
+		return (NULL);
 	i = 0;
 	l = 0;
-	while (last_node->content[i] != '\0' && last_node->content[i] != '\n')
+	while (((char *)last_node->content)[i] != '\0'
+			&& ((char *)last_node->content)[i] != '\n')
 		i++;
-	new_node->content = malloc(sizeof(char) * (ft_strlen(last_node->content) - i + 1));
-	if (!last_node->content[i])
+	i++;
+	while (((char *)last_node->content)[i])
 	{
-		ft_lstclear(leftover);
-		return ;
+		((char *)new_node->content)[l] = ((char *)last_node->content)[i];
+		i++;
+		l++;
 	}
-	while (last_node->content[i] != '\0' && last_node->content[++i])
-		new_node->content[l++] = last_node->content[i];
-	new_node->content[l] = '\0';
+	((char *)new_node->content)[l] = '\0';
 	new_node->next = NULL;
-	ft_lstclear(leftover);
+	ft_lstclear(&leftover, new_node);
 	*leftover = new_node;
 }
 
-void	ft_lstclear(t_list **leftover)
+void	ft_lstclear(t_list **leftover, t_list *new_node)
 {
 	t_list	*temp;
 
-	if (leftover == NULL)
+	if (leftover == NULL || new_node == NULL)
 		return ;
 	while (*leftover != NULL)
 	{
@@ -114,4 +104,5 @@ void	ft_lstclear(t_list **leftover)
 		*leftover = temp;
 	}
 	*leftover = NULL;
+	*leftover = new_node;
 }
