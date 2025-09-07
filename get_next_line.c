@@ -6,91 +6,155 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/29 23:36:00 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/06 17:23:58 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/07 07:20:15 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <fcntl.h>
 
 char	*ft_extract_line(t_list *leftover)
 {
-	int			size;
-	int			i;
-	int			l;
+	int			len;
 	char		*real_line;
 
-	size = ft_lstsize(leftover);
-	real_line = malloc(sizeof(char) * (size + 1));
+	if (leftover == NULL)
+		return (NULL);
+	len = ft_lst_count_char(leftover);
+	printf("len = %d\n", len);			//Delete
+	real_line = malloc(sizeof(char) * (len + 1));
 	if (!real_line)
 		return (NULL);
+	ft_copy(leftover, real_line);
+	return (real_line);
+}
+
+void	ft_copy(t_list *leftover, char *real_line)
+{
+	int			i;
+	int			l;
+
+	if (leftover == NULL)
+		return ;
 	l = 0;
 	while (leftover)
 	{
 		i = 0;
-		while (((char *)leftover->content)[i++])
+		while (leftover->content[i])
 		{
-			real_line[l++] = ((char *)leftover->content)[i];
-			if (((char *)leftover->content)[i] == '\n')
-				break ;
+			if (leftover->content[i] == '\n')
+			{
+				real_line[l++] = '\n';
+				real_line[l] = '\0';
+				return ;
+			}
+			real_line[l++] = leftover->content[i++];
 		}
-		if (((char *)leftover->content)[i] == '\n')
-			break ;
 		leftover = leftover->next;
 	}
 	real_line[l] = '\0';
-	return (real_line);
 }
 
-int	ft_strchr(t_list *leftover)
+int	ft_strchr(t_list *list)
 {
 	int		i;
-	t_list	*temp;
-	char	*str;
+	t_list	*current;
 
-	if (!leftover)
-		return (NULL);
-	str = (char *)leftover->content;
-	i = 0;
-	while (leftover)
+	if (!list)
+		return (0);
+	current = list;
+	while (current)
 	{
-		temp = leftover->next;
-		str = (char *)leftover->content;
-		while (str[i])
+		i = 0;
+		while (current->content[i])
 		{
-			if (str[i] == '\n')
+			if (current->content[i] == '\n')
 			{
 				return (1);
 			}
 			i++;
 		}
-		leftover = temp;
+		current = current->next;
 	}
-	return (NULL);
+	return (0);
+}
+
+void	ft_read_append(t_list **leftover, int fd)
+{
+	char	*buffer;
+	int		bytes_read;
+
+	bytes_read = 1;
+	while (!ft_strchr(*leftover) && bytes_read != 0)
+	{
+		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!buffer)
+			return ;
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (!bytes_read)
+		{
+			free(buffer);
+			return ;
+		}
+		buffer[bytes_read] = '\0';
+		printf("AFTER read.. Bytes: %d; buffer: %s \n", bytes_read, buffer); //delete
+		ft_append(leftover, buffer, bytes_read);
+	}
 }
 
 char	*get_next_line(int fd)
 {
-	int				bytes_read;
-	static t_list	leftover;
-	char			*buffer;
+	static t_list	*leftover;
 	char			*real_line;
 
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (!buffer)
+	if (fd < 3 || BUFFER_SIZE <= 0)
 		return (NULL);
-	bytes_read = 1;
-	while (!ft_strchr(leftover.content) && bytes_read != 0)
-	{
-		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
-		{
-			free(buffer);
-			return (NULL);
-		}
-		buffer[bytes_read] = '\0';
-		ft_append(&leftover, buffer);
-	}
-	real_line = ft_extract_line(&leftover);
+	ft_read_append(&leftover, fd);
+	real_line = ft_extract_line(leftover);
 	ft_clean_leftover(&leftover);
 	return (real_line);
+}
+
+int	main(void)
+{
+	int		fd;
+	char	*line;
+
+	fd = open("text.txt", O_RDONLY);
+	if (fd == -1)
+	{
+		printf("Couldn't locate file\n");
+		exit(-1);
+	}
+	printf("fd = %d\n", fd);
+
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	line = get_next_line(fd);
+	// printf("%s", line);
+	// while(1)
+	// {
+	// 	line = get_next_line(fd);
+	// 	if(!line)
+	// 		break;
+	// 	printf("%s", line);
+	// 	free(line);
+	// }
+	close(fd);
 }
