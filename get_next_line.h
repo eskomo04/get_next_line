@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:48:05 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 06:20:53 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/15 20:57:24 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ char	*ft_strdup(const char *s);
 size_t	ft_strlen(const char *s);
 char	*ft_strchr(const char *s, int c);
 char	*ft_readline(int fd, char *remainder);
-char	*ft_leftover(char *remainder);
+void	ft_leftover(char *leftover, char *remainder);
+size_t	ft_strlcpy(char *dst, const char *src, size_t size);
 
 #endif
