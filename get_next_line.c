@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 04:46:45 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/15 06:24:47 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,39 +20,41 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 		return (NULL);
 	remainder = ft_readline(fd, remainder);
-	if (!remainder || *remainder == '\0')
+	if (!remainder)
 	{
-		// free(remainder);			If ft_readline returns NULL, remainder is already NULL so no need to free
-		// remainder = NULL;
 		return (NULL);
 	}
 	line = ft_extract_line(&remainder);
+	remainder = ft_leftover(remainder);
 	return (line);
 }
 
 char	*ft_readline(int fd, char *remainder)
 {
-	char		buffer[BUFFER_SIZE + 1];
-	ssize_t		bytes_read;
+	char		*buffer;
+	int			bytes_read;
 
+	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
 	bytes_read = 1;
 	while (!ft_strchr(remainder, '\n') && bytes_read != 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read == -1)
+		if (bytes_read <= 0)
+		{
 			return (NULL);
+		}
 		buffer[bytes_read] = '\0';
 		remainder = ft_strjoin(remainder, buffer);
-		if (!remainder)
-			return (NULL);
 	}
+	free(buffer);
 	return (remainder);
 }
 
 char	*ft_extract_line(char **remainder)
 {
 	char	*line;
-	char	*new_remainder;
 	size_t	i;
 	char	*temp;
 
@@ -71,9 +73,21 @@ char	*ft_extract_line(char **remainder)
 	if ((*remainder)[i] == '\n')
 		*temp++ = (*remainder)[i++];
 	*temp = '\0';
-	new_remainder = ft_strdup(&(*remainder)[i]);
-	free(*remainder);
-	*remainder = new_remainder;
 	return (line);
+}
+
+char	*ft_leftover(char *remainder)
+{
+	char	*new_remainder;
+	size_t	i;
+
+	i = 0;
+	while (remainder[i] && remainder[i] != '\n')
+		i++;
+	if (remainder[i] == '\n')
+		i++;
+	new_remainder = ft_strdup(&remainder[i]);
+	free(remainder);
+	return (new_remainder);
 }
 
