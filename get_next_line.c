@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 21:28:31 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:30:00 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,19 +23,22 @@ char	*get_next_line(int fd)
 		return (NULL);
 	remainder = NULL;
 	if (leftover[0] != '\0')
-		ft_strlcpy(remainder, leftover, sizeof(leftover));
-			//! maybe issue here?Allocating memory for remainder
+		remainder = ft_strdup(leftover);
 	remainder = ft_readline(fd, remainder);
-	printf("Remainder after read: %s\n", remainder);
-	if (!remainder) //Check if remainder is NULL/empty
-	{
-		free(remainder);
+	if (!remainder)
 		return (NULL);
-	}
 	line = ft_extract_line(&remainder);
 	ft_leftover(leftover, remainder);
 	return (line);
 }
+/**
+ * ft_readline - Reads from a file descriptor until a newline is found
+ * 			 or end of file is reached.
+ * @param fd The file descriptor of the file to read from.
+ * @param remainder The string containing the remaining characters
+ * 				 of the current line (+ the next line)
+ * Return: The updated remainder string, or NULL if allocation fails.
+ */
 
 char	*ft_readline(int fd, char *remainder)
 {
@@ -49,17 +52,27 @@ char	*ft_readline(int fd, char *remainder)
 	while (!ft_strchr(remainder, '\n') && bytes_read != 0)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read <= 0)
+		if (bytes_read < 0)
 		{
 			free(buffer);
-			return (remainder);
+			return (free(remainder), NULL);
 		}
+		if (bytes_read == 0)
+			break ;
 		buffer[bytes_read] = '\0';
 		remainder = ft_strjoin(remainder, buffer);
+		if (!remainder)
+			return (free(buffer), NULL);
 	}
 	free(buffer);
 	return (remainder);
 }
+/**
+ * ft_extract_line - Extracts a line from the remainder string.
+ * @param remainder The string containing the remaining characters
+ * 					of the current line (+ the next line)
+ * Return: The extracted line, or NULL if allocation fails.
+ */
 
 char	*ft_extract_line(char **remainder)
 {
@@ -67,6 +80,8 @@ char	*ft_extract_line(char **remainder)
 	size_t	i;
 	char	*temp;
 
+	if (!remainder || (*remainder)[0] == '\0')
+		return (NULL);
 	i = 0;
 	while ((*remainder)[i] && (*remainder)[i] != '\n')
 		i++;
@@ -84,29 +99,44 @@ char	*ft_extract_line(char **remainder)
 	*temp = '\0';
 	return (line);
 }
+/**
+ * ft_leftover - Updates the leftover buffer with
+ * 				 any remaining characters for the "next_line"
+ * @param leftover The Array to store leftover characters
+ * @param remainder The string containing the remaining characters
+ * 					 of the current line (+ the next line)
+ * Return: void
+ */
 
 void	ft_leftover(char *leftover, char *remainder)
 {
-	char	*new_remainder;
 	size_t	i;
 
+	if (!leftover)
+		return ;
+	if (!remainder)
+	{
+		leftover[0] = '\0';
+		return ;
+	}
 	i = 0;
 	while (remainder[i] && remainder[i] != '\n')
 		i++;
 	if (remainder[i] == '\n')
 		i++;
-	new_remainder = ft_strdup(&remainder[i]);
-	ft_strlcpy(leftover, new_remainder, ft_strlen(new_remainder) + 1);
-	free(new_remainder);
+	if (remainder[i] == '\0')
+		leftover[0] = '\0';
+	else
+		ft_strlcpy(leftover, &remainder[i], BUFFER_SIZE + 1);
 	free(remainder);
 }
 
-int	main(void)
-{
-	int	fd;
+// int	main(void)
+// {
+// 	int	fd;
 
-	fd = open("1char.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
-	close(fd);
-	return (0);
-}
+// 	fd = open("1char.txt", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	close(fd);
+// 	return (0);
+// }

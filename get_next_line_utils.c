@@ -6,17 +6,26 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 00:56:01 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 21:20:17 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/15 23:19:09 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+
+/**
+ * ft_strdup - Duplicates a string by allocating memory for it.
+ * @param s The string to duplicate.
+ * Return: A pointer to the newly allocated string(\0),
+ *			or NULL if allocation fails.
+ */
 
 char	*ft_strdup(const char *s)
 {
 	size_t	i;
 	char	*dup;
 
+	if (!s)
+		return (NULL);
 	i = 0;
 	while (s[i])
 		i++;
@@ -57,34 +66,54 @@ char	*ft_strchr(const char *s, int c)
 	}
 	return (NULL);
 }
+/**
+ * ft_strjoin - Joins two strings into a new string.
+ * @param remainder save the previous read
+ * @param buffer new read
+ * Return: A pointer to the newly allocated string, or NULL if allocation fails.
+ */
 
 char	*ft_strjoin(char *remainder, char *buffer)
 {
 	char	*new_str;
-	char	*temp;
+	int		i;
+	int		j;
 
 	if (!remainder)
-		remainder = ft_strdup("");
-	if (!remainder || !buffer)
-		return (NULL);
-	new_str = (char *)malloc(sizeof(char)
-			* ((ft_strlen(remainder) + ft_strlen(buffer)) + 1));
+		return (ft_strdup(buffer));
+	new_str = (char *)malloc(sizeof(char) * (ft_strlen(remainder)
+				+ ft_strlen(buffer) + 1));
 	if (!new_str)
 		return (NULL);
-	temp = new_str;
-	while (*remainder)
-		*temp++ = *remainder++;
-	while (*buffer)
-		*temp++ = *buffer++;
-	*temp = '\0';
+	i = 0;
+	j = 0;
+	while (remainder[i])
+	{
+		new_str[i] = remainder[i];
+		i++;
+	}
+	while (buffer[j])
+		new_str[i++] = buffer[j++];
+	new_str[i] = '\0';
+	if (remainder)
+		free(remainder);
 	return (new_str);
 }
+/**
+ * ft_strlcpy - Copies a string to a destination buffer with size limit.
+ * @param dst The destination buffer.
+ * @param src The source string.
+ * @param size The size of the destination buffer.
+ * Return: The total length of the string it tried to create (length of src).
+ */
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 {
 	size_t	i;
 	size_t	src_len;
 
+	if (!src)
+		return (0);
 	i = 0;
 	while (src[i] != '\0')
 		i++;
@@ -92,7 +121,7 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t size)
 	i = 0;
 	if (size > 0)
 	{
-		while (i < size -1 && src[i] != '\0')
+		while (i < size - 1 && src[i] != '\0')
 		{
 			dst[i] = src[i];
 			i++;
