@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 23:30:00 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/18 02:11:49 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,9 @@ char	*get_next_line(int fd)
 		return (NULL);
 	remainder = NULL;
 	if (leftover[0] != '\0')
+	{
 		remainder = ft_strdup(leftover);
+	}
 	remainder = ft_readline(fd, remainder);
 	if (!remainder)
 		return (NULL);

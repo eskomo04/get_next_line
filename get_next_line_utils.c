@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 00:56:01 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/15 23:19:09 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/18 02:19:11 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,10 @@ char	*ft_strjoin(char *remainder, char *buffer)
 	int		j;
 
 	if (!remainder)
+	{
+		free(remainder);
 		return (ft_strdup(buffer));
+	}
 	new_str = (char *)malloc(sizeof(char) * (ft_strlen(remainder)
 				+ ft_strlen(buffer) + 1));
 	if (!new_str)
@@ -95,10 +98,40 @@ char	*ft_strjoin(char *remainder, char *buffer)
 	while (buffer[j])
 		new_str[i++] = buffer[j++];
 	new_str[i] = '\0';
-	if (remainder)
-		free(remainder);
+	free(remainder);
 	return (new_str);
 }
+
+
+// char	*ft_strjoin(char *s1, char *s2)
+// {
+// 	char	*result;
+// 	size_t	i;
+// 	size_t	j;
+
+// 	if (!s2)
+// 		return (free(s1), NULL);
+// 	i = 0;
+// 	if (s1)
+// 		i = ft_strlen(s1);
+// 	j = ft_strlen(s2);
+// 	result = malloc(sizeof(char) * (i + j + 1));
+// 	if (!result)
+// 		return (free(s1), free(s2), NULL);
+// 	i = 0;
+// 	j = 0;
+// 	while (s1 && s1[j])
+// 		result[i++] = s1[j++];
+// 	j = 0;
+// 	while (s2[j] && s2[j] != '\n')
+// 		result[i++] = s2[j++];
+// 	if (s2[j] == '\n')
+// 		result[i++] = '\n';
+// 	if (s1)
+// 		free(s1);
+// 	return (free(s2), result);
+// }
+
 /**
  * ft_strlcpy - Copies a string to a destination buffer with size limit.
  * @param dst The destination buffer.
