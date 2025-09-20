@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/18 02:11:49 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/20 17:23:35 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,17 @@ char	*get_next_line(int fd)
 	if (leftover[0] != '\0')
 	{
 		remainder = ft_strdup(leftover);
+		if (!remainder)
+		{
+			return (NULL);
+		}
 	}
 	remainder = ft_readline(fd, remainder);
 	if (!remainder)
+	{
+		leftover[0] = '\0';
 		return (NULL);
+	}
 	line = ft_extract_line(&remainder);
 	ft_leftover(leftover, remainder);
 	return (line);
@@ -49,7 +56,7 @@ char	*ft_readline(int fd, char *remainder)
 
 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
-		return (NULL);
+		return (free(remainder), NULL);
 	bytes_read = 1;
 	while (!ft_strchr(remainder, '\n') && bytes_read != 0)
 	{
@@ -57,7 +64,8 @@ char	*ft_readline(int fd, char *remainder)
 		if (bytes_read < 0)
 		{
 			free(buffer);
-			return (free(remainder), NULL);
+			free(remainder);
+			return (NULL);
 		}
 		if (bytes_read == 0)
 			break ;
@@ -83,7 +91,7 @@ char	*ft_extract_line(char **remainder)
 	char	*temp;
 
 	if (!remainder || (*remainder)[0] == '\0')
-		return (NULL);
+		return (free(remainder), NULL);
 	i = 0;
 	while ((*remainder)[i] && (*remainder)[i] != '\n')
 		i++;
@@ -137,7 +145,15 @@ void	ft_leftover(char *leftover, char *remainder)
 // {
 // 	int	fd;
 
-// 	fd = open("1char.txt", O_RDONLY);
+// 	fd = open("read_error.txt", O_RDONLY);
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
+// 	printf("%s", get_next_line(fd));
 // 	printf("%s", get_next_line(fd));
 // 	close(fd);
 // 	return (0);

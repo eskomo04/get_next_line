@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 00:56:01 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/18 02:19:11 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/20 15:27:06 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
  * ft_strdup - Duplicates a string by allocating memory for it.
  * @param s The string to duplicate.
  * Return: A pointer to the newly allocated string(\0),
- *			or NULL if allocation fails.
+ *			or NULL if allocation fails; after free-ing s.
  */
 
-char	*ft_strdup(const char *s)
+char	*ft_strdup(char *s)
 {
 	size_t	i;
 	char	*dup;
@@ -87,7 +87,7 @@ char	*ft_strjoin(char *remainder, char *buffer)
 	new_str = (char *)malloc(sizeof(char) * (ft_strlen(remainder)
 				+ ft_strlen(buffer) + 1));
 	if (!new_str)
-		return (NULL);
+		return (free(remainder), NULL);
 	i = 0;
 	j = 0;
 	while (remainder[i])
@@ -101,36 +101,6 @@ char	*ft_strjoin(char *remainder, char *buffer)
 	free(remainder);
 	return (new_str);
 }
-
-
-// char	*ft_strjoin(char *s1, char *s2)
-// {
-// 	char	*result;
-// 	size_t	i;
-// 	size_t	j;
-
-// 	if (!s2)
-// 		return (free(s1), NULL);
-// 	i = 0;
-// 	if (s1)
-// 		i = ft_strlen(s1);
-// 	j = ft_strlen(s2);
-// 	result = malloc(sizeof(char) * (i + j + 1));
-// 	if (!result)
-// 		return (free(s1), free(s2), NULL);
-// 	i = 0;
-// 	j = 0;
-// 	while (s1 && s1[j])
-// 		result[i++] = s1[j++];
-// 	j = 0;
-// 	while (s2[j] && s2[j] != '\n')
-// 		result[i++] = s2[j++];
-// 	if (s2[j] == '\n')
-// 		result[i++] = '\n';
-// 	if (s1)
-// 		free(s1);
-// 	return (free(s2), result);
-// }
 
 /**
  * ft_strlcpy - Copies a string to a destination buffer with size limit.

@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/11 00:48:05 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/18 01:40:46 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/20 15:13:15 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 char	*get_next_line(int fd);
 char	*ft_extract_line(char **remainder);
 char	*ft_strjoin(char *remainder, char *buffer);
-char	*ft_strdup(const char *s);
+char	*ft_strdup(char *s);
 size_t	ft_strlen(const char *s);
 char	*ft_strchr(const char *s, int c);
 char	*ft_readline(int fd, char *remainder);
