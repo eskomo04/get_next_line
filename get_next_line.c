@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/20 17:23:35 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/20 18:43:10 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,16 @@ char	*get_next_line(int fd)
 	static char	leftover[BUFFER_SIZE + 1];
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	{
+		leftover[0] = '\0';
 		return (NULL);
+	}
 	remainder = NULL;
 	if (leftover[0] != '\0')
 	{
 		remainder = ft_strdup(leftover);
 		if (!remainder)
-		{
 			return (NULL);
-		}
 	}
 	remainder = ft_readline(fd, remainder);
 	if (!remainder)
@@ -37,7 +38,7 @@ char	*get_next_line(int fd)
 		return (NULL);
 	}
 	line = ft_extract_line(&remainder);
-	ft_leftover(leftover, remainder);
+	ft_leftover(leftover, &remainder);
 	return (line);
 }
 /**
@@ -88,10 +89,9 @@ char	*ft_extract_line(char **remainder)
 {
 	char	*line;
 	size_t	i;
-	char	*temp;
 
-	if (!remainder || (*remainder)[0] == '\0')
-		return (free(remainder), NULL);
+	if (!remainder || !*remainder || (*remainder)[0] == '\0')
+		return (NULL);
 	i = 0;
 	while ((*remainder)[i] && (*remainder)[i] != '\n')
 		i++;
@@ -99,14 +99,12 @@ char	*ft_extract_line(char **remainder)
 		i++;
 	line = (char *)malloc(i + 1);
 	if (!line)
+	{
+		free(*remainder);
+		*remainder = NULL;
 		return (NULL);
-	i = 0;
-	temp = line;
-	while ((*remainder)[i] && (*remainder)[i] != '\n')
-		*temp++ = (*remainder)[i++];
-	if ((*remainder)[i] == '\n')
-		*temp++ = (*remainder)[i++];
-	*temp = '\0';
+	}
+	ft_strlcpy(line, *remainder, i + 1);
 	return (line);
 }
 /**
@@ -118,27 +116,28 @@ char	*ft_extract_line(char **remainder)
  * Return: void
  */
 
-void	ft_leftover(char *leftover, char *remainder)
+void	ft_leftover(char *leftover, char **remainder)
 {
 	size_t	i;
 
 	if (!leftover)
 		return ;
-	if (!remainder)
+	if (!remainder || !*remainder)
 	{
 		leftover[0] = '\0';
 		return ;
 	}
 	i = 0;
-	while (remainder[i] && remainder[i] != '\n')
+	while ((*remainder)[i] && (*remainder)[i] != '\n')
 		i++;
-	if (remainder[i] == '\n')
+	if ((*remainder)[i] == '\n')
 		i++;
-	if (remainder[i] == '\0')
+	if ((*remainder)[i] == '\0')
 		leftover[0] = '\0';
 	else
-		ft_strlcpy(leftover, &remainder[i], BUFFER_SIZE + 1);
-	free(remainder);
+		ft_strlcpy(leftover, &(*remainder)[i], BUFFER_SIZE + 1);
+	free(*remainder);
+	*remainder = NULL;
 }
 
 // int	main(void)
@@ -146,14 +145,10 @@ void	ft_leftover(char *leftover, char *remainder)
 // 	int	fd;
 
 // 	fd = open("read_error.txt", O_RDONLY);
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
-// 	printf("%s", get_next_line(fd));
+// 	printf("This is 1 line:::: %s", get_next_line(fd));
+// 	printf("This is 2 line:::: %s", get_next_line(fd));
+// 	printf("This is 3 line:::: %s", get_next_line(fd));
+// 	printf("This is 4 line:::: %s", get_next_line(fd));
 // 	printf("%s", get_next_line(fd));
 // 	close(fd);
 // 	return (0);
