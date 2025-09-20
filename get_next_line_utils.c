@@ -6,7 +6,7 @@
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 00:56:01 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/20 15:27:06 by eskomo           ###   ########.fr       */
+/*   Updated: 2025/09/20 19:08:26 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ size_t	ft_strlen(const char *s)
 	i = 0;
 	if (!s)
 		return (0);
-	while (s[i])
+	while (s[i] != '\0')
 		i++;
 	return (i);
 }
@@ -76,28 +76,25 @@ char	*ft_strchr(const char *s, int c)
 char	*ft_strjoin(char *remainder, char *buffer)
 {
 	char	*new_str;
-	int		i;
-	int		j;
+	int		len_remainder;
+	int		len_buffer;
 
 	if (!remainder)
 	{
-		free(remainder);
-		return (ft_strdup(buffer));
+		remainder = ft_strdup("");
+		if (!remainder)
+			return (NULL);
 	}
-	new_str = (char *)malloc(sizeof(char) * (ft_strlen(remainder)
-				+ ft_strlen(buffer) + 1));
+	len_remainder = ft_strlen(remainder);
+	len_buffer = ft_strlen(buffer);
+	new_str = (char *)malloc(sizeof(char) * (len_remainder + len_buffer + 1));
 	if (!new_str)
-		return (free(remainder), NULL);
-	i = 0;
-	j = 0;
-	while (remainder[i])
 	{
-		new_str[i] = remainder[i];
-		i++;
+		free(remainder);
+		return (NULL);
 	}
-	while (buffer[j])
-		new_str[i++] = buffer[j++];
-	new_str[i] = '\0';
+	ft_strlcpy(new_str, remainder, len_remainder + 1);
+	ft_strlcpy(new_str + len_remainder, buffer, len_buffer + 1);
 	free(remainder);
 	return (new_str);
 }
