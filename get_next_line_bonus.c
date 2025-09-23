@@ -1,44 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: eskomo <eskomo@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/09/14 22:22:58 by eskomo            #+#    #+#             */
-/*   Updated: 2025/09/22 22:23:39 by eskomo           ###   ########.fr       */
+/*   Created: 2025/09/22 23:04:52 by eskomo            #+#    #+#             */
+/*   Updated: 2025/09/22 23:54:56 by eskomo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <fcntl.h>
 
 char	*get_next_line(int fd)
 {
 	char		*remainder;
 	char		*line;
-	static char	leftover[BUFFER_SIZE + 1];
+	static char	leftover [MAX_FD][BUFFER_SIZE + 1];
 
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
-		leftover[0] = '\0';
+		leftover[fd][0] = '\0';
 		return (NULL);
 	}
 	remainder = NULL;
-	if (leftover[0] != '\0')
+	if (leftover[fd][0] != '\0')
 	{
-		remainder = ft_strdup(leftover);
+		remainder = ft_strdup(leftover[fd]);
 		if (!remainder)
 			return (NULL);
 	}
 	remainder = ft_readline(fd, remainder);
 	if (!remainder)
 	{
-		leftover[0] = '\0';
+		leftover[fd][0] = '\0';
 		return (NULL);
 	}
 	line = ft_extract_line(&remainder);
-	ft_leftover(leftover, &remainder);
+	ft_leftover(fd, leftover, &remainder);
 	return (line);
 }
 /**
@@ -116,15 +116,14 @@ char	*ft_extract_line(char **remainder)
  * Return: void
  */
 
-void	ft_leftover(char *leftover, char **remainder)
+void	ft_leftover(int fd, char leftover[MAX_FD][BUFFER_SIZE + 1],
+					char **remainder)
 {
 	size_t	i;
 
-	if (!leftover)
-		return ;
 	if (!remainder || !*remainder)
 	{
-		leftover[0] = '\0';
+		leftover[fd][0] = '\0';
 		return ;
 	}
 	i = 0;
@@ -133,9 +132,9 @@ void	ft_leftover(char *leftover, char **remainder)
 	if ((*remainder)[i] == '\n')
 		i++;
 	if ((*remainder)[i] == '\0')
-		leftover[0] = '\0';
+		leftover[fd][0] = '\0';
 	else
-		ft_strlcpy(leftover, &(*remainder)[i],
+		ft_strlcpy(leftover[fd], &(*remainder)[i],
 			ft_strlen(&(*remainder)[i]) + 1);
 	free(*remainder);
 	*remainder = NULL;
